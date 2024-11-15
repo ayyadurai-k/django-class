@@ -1,3 +1,32 @@
 
 
 project -> project.urls -> app.urls -> views
+
+
+module 3 : 15/11/2024 
+
+Migrations : 
+
+1. Convert models into table  - py manage.py makemigrations , py manage.py migrate
+
+
+Admin Panel : (Security) 
+
+
+1. Authorized user - username , password
+
+2. Create user (Super user ) : to access the admin panel 
+
+3. How to create the user : 
+    py manage.py createsuperuser 
+
+4. URL - /admin
+
+5. login 
+
+6. add our models to admin 
+    using "admin.py" file
+
+    admin.site.register(<Model Name>)
+
+To Manipulate our models  - CRUD
