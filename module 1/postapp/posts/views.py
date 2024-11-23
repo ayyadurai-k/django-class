@@ -36,7 +36,7 @@ def get_post(request, id):
 
 
 def list_posts(request):
-    posts = Post.objects.all().values("id", "title", "description", "image")  # []
+    posts = Post.objects.all().values("id", "title", "description", "image")  #  SELECT * FROM posts;
     data = list(posts)
     return JsonResponse(data, safe=False)
 

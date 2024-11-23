@@ -30,3 +30,25 @@ Admin Panel : (Security)
     admin.site.register(<Model Name>)
 
 To Manipulate our models  - CRUD
+
+
+
+ORM - Object Relational Mapping 
+
+
+class Post:
+    title = "" - columns
+    description = "" - columns
+
+post1 = Post() - rows 
+post2 = Post() - rows
+ 
+
+
+REQUEST METHODS
+
+GET - THERE IS NO MODIFICATION IN DB 
+POST - TO CREATE NEW RECORD (MODIFIES DB)
+PUT - TO UPDATE THE ENTIRE RECORD (MODIFIES DB)
+PATCH - TO UPDATE SPECIFIC FIELDS IN RECORD (MODIFIES DB)
+DELETE - TO DELETE RECORD (MODIFIES DB)

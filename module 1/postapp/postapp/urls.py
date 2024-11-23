@@ -16,13 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from postapp.views import get_csrf_token
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include("posts.urls")),
-
+    path('auth/get-csrf-token/', get_csrf_token) # AUTHENTICATION
 ]
-
 
 
 # http://127.0.0.1:8000/posts/get-hello-world/
