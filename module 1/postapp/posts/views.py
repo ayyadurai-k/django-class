@@ -1,6 +1,9 @@
 from django.http.response import JsonResponse
 from posts.models import Post
+from posts.serializers import PostSerializer
 import json
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 # Create your views here.
@@ -10,35 +13,33 @@ import json
 # Functions  - API - Application Programming Interface
 
 
+@api_view(["GET"])  # DECORATOR IT WILL CALL BEFORE FUNCTION CALL AUTOMATICALLY
 def get_hello_world(request):
+    print("called")
     data = {
         "message": "Hello , World",
         "quote": "All is well"
     }
-    return JsonResponse(data)
+    return Response(data)
 
 
 # ORM - Object Relational Mapping
-
+@api_view(["GET"])
 def get_post(request, id):
     try:
-        post = Post.objects.get(id=id)  # SELECT * FROM POST WHERE ID = 1;
+        # SELECT * FROM POST WHERE ID = 1; table row
+        post = Post.objects.get(id=id)
+        serializer = PostSerializer(post)  # CONVERT MODEL TO JSON
     except Post.DoesNotExist:
-        return JsonResponse({"message": "Post doesn't exists , check ID"})
-    data = {
-        "id": post.id,
-        "title": post.title,
-        "description": post.description,
-        "image": str(post.image)
-    }
-
-    return JsonResponse(data)
+        return Response({"message": "Post doesn't exists , check ID"})
+    return Response(serializer.data)
 
 
+@api_view(["GET"])
 def list_posts(request):
-    posts = Post.objects.all().values("id", "title", "description", "image")  #  SELECT * FROM posts;
-    data = list(posts)
-    return JsonResponse(data, safe=False)
+    posts = Post.objects.all()
+    serializer = PostSerializer(posts, many=True) # START EXPECTING THE LIST
+    return Response(serializer.data)
 
 
 def delete_post(request, id):

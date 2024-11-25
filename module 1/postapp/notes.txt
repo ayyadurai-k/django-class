@@ -52,3 +52,18 @@ POST - TO CREATE NEW RECORD (MODIFIES DB)
 PUT - TO UPDATE THE ENTIRE RECORD (MODIFIES DB)
 PATCH - TO UPDATE SPECIFIC FIELDS IN RECORD (MODIFIES DB)
 DELETE - TO DELETE RECORD (MODIFIES DB)
+
+
+branches - main , drf 
+
+
+main - raw Django
+drf - django rest framework
+
+
+delete , create , update - modified
+
+jeevitha -> jeevitha  - not modified
+
+
+[{title,description}]
