@@ -1,12 +1,23 @@
-from django.urls import path
-from posts.views import get_hello_world, get_post, list_posts, delete_post, delete_all_post, create_post, update_post
+from django.urls import path, include
+from posts.views import get_hello_world, PostViewSet
+from rest_framework.routers import DefaultRouter
+
+
+router = DefaultRouter()
+
+router.register(r'', PostViewSet)
+
 
 urlpatterns = [
     path("get-hello-world/", get_hello_world),  # RUN THIS
-    path("get/<int:id>/", get_post),  # ONE RECORD
-    path("list/", list_posts),  # MULTIPLE RECORDS
-    path("delete/<int:id>/", delete_post),  # DELETE ONE RECORD
-    path("delete-all/", delete_all_post),  # DELETE ALL RECORD
-    path("create/", create_post),  # CREATE ONE RECORD
-    path("update/<int:id>/", update_post),  # UPDATE ONE RECORD
+    path("", include(router.urls))
+
+    # LIST ALL - /posts/ - GET
+    # CREATE - /posts/ - POST
+
+    # GET ONE - /posts/21/ - GET
+    # DELETE - /posts/21/ - DELETE
+    # UPDATE - /posts/21/ - PATCH
+
+
 ]
