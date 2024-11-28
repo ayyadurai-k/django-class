@@ -21,7 +21,8 @@ from postapp.views import get_csrf_token
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include("posts.urls")),
-    path('auth/get-csrf-token/', get_csrf_token) # AUTHENTICATION
+    path('auth/', include("authentication.urls")),
+    path('auth/get-csrf-token/', get_csrf_token)  # AUTHENTICATION
 ]
 
 
