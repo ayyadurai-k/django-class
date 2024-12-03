@@ -2,8 +2,9 @@ from django.http.response import JsonResponse
 from posts.models import Post
 from posts.serializers import PostSerializer
 import json
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 
 
 # Create your views here.
@@ -12,10 +13,10 @@ from rest_framework.response import Response
 
 # Functions  - API - Application Programming Interface
 
-
 @api_view(["GET"])  # DECORATOR IT WILL CALL BEFORE FUNCTION CALL AUTOMATICALLY
+@permission_classes([IsAuthenticated])
 def get_hello_world(request):
-    print("called")
+    print("user : ",request.user)
     data = {
         "message": "Hello , World",
         "quote": "All is well"
