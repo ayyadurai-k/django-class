@@ -67,3 +67,26 @@ jeevitha -> jeevitha  - not modified
 
 
 [{title,description}]
+
+
+Users : 
+
+{id : 1 , username , email , password }
+{id : 2, username , email , password }
+{id : 3, username , email , password }
+
+
+Posts :
+
+{
+    id ,title , description , image
+}
+{
+    id ,title , description , image
+}
+{
+    id ,title , description , image
+}
+{
+    id ,title , description , image
+}

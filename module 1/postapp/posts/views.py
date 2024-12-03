@@ -2,9 +2,9 @@ from django.http.response import JsonResponse
 from posts.models import Post
 from posts.serializers import PostSerializer
 import json
-from rest_framework.decorators import api_view,permission_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated,IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 # Create your views here.
@@ -16,7 +16,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 @api_view(["GET"])  # DECORATOR IT WILL CALL BEFORE FUNCTION CALL AUTOMATICALLY
 @permission_classes([IsAuthenticated])
 def get_hello_world(request):
-    print("user : ",request.user)
+    print("user : ", request.user)
     data = {
         "message": "Hello , World",
         "quote": "All is well"
@@ -39,7 +39,7 @@ def get_post(request, id):
 @api_view(["GET"])
 def list_posts(request):
     posts = Post.objects.all()
-    serializer = PostSerializer(posts, many=True) # START EXPECTING THE LIST
+    serializer = PostSerializer(posts, many=True)  # START EXPECTING THE LIST
     return Response(serializer.data)
 
 
@@ -54,19 +54,21 @@ def delete_all_post(request):
     return JsonResponse({"message": "All posts deleted"})
 
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def create_post(request):
-    data = json.loads(request.body)  # JSON TO DICTIONARY
+    user = request.user
+    request.data["user"] = user.id
 
-    title = data.get("title")
-    description = data.get("description")
+    print(" request.data : ", request.data)
 
-    post = Post.objects.create(title=title, description=description)
-
-    return JsonResponse({"message": f"Post {post.id} created"})
+    serializer = PostSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response({"message": "Post created successfully", "data": serializer.data}, status=201)
 
 
 def update_post(request, id):
-
     try:
         post = Post.objects.get(id=id)  # SELECT * FROM POST WHERE ID = 1
         data = json.loads(request.body)  # JSON TO DICTIONARY
