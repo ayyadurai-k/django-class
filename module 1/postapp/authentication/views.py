@@ -4,6 +4,7 @@ from authentication.serializers import UserSerializer
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 
 
 @api_view(["POST"])
@@ -35,6 +36,11 @@ def login_user(request):
 def list_user(request):
     pass
 
-
+@api_view(["GET"])
 def get_user(request, id):
-    pass
+    try:
+        user = User.objects.get(id=id)
+        serializer = UserSerializer(user)
+        return Response({"message": "User fetched successfully", "data": serializer.data},status=200)
+    except User.DoesNotExist:
+        return Response({"message": "User Doesn't Exists"},status=404)

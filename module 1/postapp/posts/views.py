@@ -1,6 +1,6 @@
 from django.http.response import JsonResponse
 from posts.models import Post
-from posts.serializers import PostSerializer
+from posts.serializers import PostSerializer,PostListSerializer
 import json
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -39,7 +39,7 @@ def get_post(request, id):
 @api_view(["GET"])
 def list_posts(request):
     posts = Post.objects.all()
-    serializer = PostSerializer(posts, many=True)  # START EXPECTING THE LIST
+    serializer = PostListSerializer(posts, many=True)  # START EXPECTING THE LIST
     return Response(serializer.data)
 
 
@@ -60,28 +60,21 @@ def create_post(request):
     user = request.user
     request.data["user"] = user.id
 
-    print(" request.data : ", request.data)
-
     serializer = PostSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response({"message": "Post created successfully", "data": serializer.data}, status=201)
 
 
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
 def update_post(request, id):
     try:
-        post = Post.objects.get(id=id)  # SELECT * FROM POST WHERE ID = 1
-        data = json.loads(request.body)  # JSON TO DICTIONARY
-
-        title = data.get("title")
-        description = data.get("description")
-
-        post.title = title
-        post.description = description
-
-        post.save()
-
+        post = Post.objects.get(id=id)
+        serializer = PostSerializer(
+            instance=post, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"message": "Post updated successfully", "data": serializer.data}, status=200)
     except Post.DoesNotExist:
-        return JsonResponse({"message": "Post doesn't exists , check ID"})
-
-    return JsonResponse({"message": f"Post {post.id} updated"})
+        return Response({"message": "Post doesn't exists."}, status=404)
