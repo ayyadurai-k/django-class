@@ -12,10 +12,6 @@ class PostSerializer(serializers.ModelSerializer):
     def validate(self, validated_data):
         title = validated_data.get('title', None)
         description = validated_data.get('description', None)
-
-        if "ABC" not in title :
-            raise serializers.ValidationError(
-                "Title must contain 'ABC'")
         
         if title not in description:
             raise serializers.ValidationError(
