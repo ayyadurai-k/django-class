@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import User
 from django.db.models import Q
+from rest_framework import status
 
 
 # Create your views here.
@@ -52,13 +53,21 @@ def delete_all_post(request):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_post(request):
-    user = request.user
-    request.data["user"] = user.id
-
-    serializer = PostSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    return Response({"message": "Post created successfully", "data": serializer.data}, status=201)
+    try:
+        user = request.user
+        request.data["user"] = user.id
+        title = request.data.get("title",None)
+        description = request.data.get("description",None)
+        
+        if not title or not description:
+            raise Exception("Please enter value for title and description")
+            
+        serializer = PostSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"message": "Post created successfully", "data": serializer.data}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return  Response({"message" : str(e) },status=400)
 
 
 @api_view(["PATCH"])
@@ -72,16 +81,18 @@ def update_post(request, id):
         serializer.save()
         return Response({"message": "Post updated successfully", "data": serializer.data}, status=200)
     except Post.DoesNotExist:
-        return Response({"message": "Post doesn't exists."}, status=404)
+        return Response({"message": "Post doesn't exists."}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(["GET"])
 def list_posts(request):
     search =  request.query_params.get("search",None)
-    
+    print(" search :  ",search)
     if search :
+        print(" Called if ")
         posts = Post.objects.filter(Q(title__icontains=search) | Q(description__icontains=search))
     else :
+        print(" called else ")
         posts = Post.objects.all()
     serializer = PostListSerializer(
         posts, many=True)  # START EXPECTING THE LIST
