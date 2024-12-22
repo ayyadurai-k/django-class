@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from authentication.serializers import UserSerializer
 from rest_framework.response import Response
-from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(["POST"])
@@ -17,21 +18,33 @@ def signup_user(request):
 
 @api_view(["POST"])
 def login_user(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(request, username=username, password=password)
+    if user:
+        login(request, user)
+    token = AccessToken.for_user(user)
+    response = Response({'message': 'Logged in successfully'},status=200)
+    
+    # Set JWT as HttpOnly cookie
+    response.set_cookie(
+        key='jwt',
+        value=str(token),
+        httponly=True,
+        samesite='Strict', # Optional: To prevent CSRF
+        max_age=365 * 24 * 60 * 60, # 1 year
+    )
+    return response
 
-    if not username or not password:
-        return Response({"error": "Username and password are required."}, status=400)
-
-    user = authenticate(username=username, password=password)
-
-    if not user:
-        return Response({"error": "Invalid credentials"}, status=401)
-
-    token = Token.objects.create(user=user)
-
-    return Response({"message": "Login successful", "key": token.key})
-
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_view(request):
+    logout(request)
+    response = Response({'message': 'Logged out successfully'},
+    status=200)
+    # Clear the cookie
+    response.delete_cookie('jwt')
+    return response
 
 def list_user(request):
     pass

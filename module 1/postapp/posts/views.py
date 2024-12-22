@@ -85,6 +85,7 @@ def update_post(request, id):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def list_posts(request):
     search =  request.query_params.get("search",None)
     print(" search :  ",search)
