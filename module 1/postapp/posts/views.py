@@ -87,12 +87,9 @@ def update_post(request, id):
 @api_view(["GET"])
 def list_posts(request):
     search =  request.query_params.get("search",None)
-    print(" search :  ",search)
     if search :
-        print(" Called if ")
         posts = Post.objects.filter(Q(title__icontains=search) | Q(description__icontains=search))
     else :
-        print(" called else ")
         posts = Post.objects.all()
     serializer = PostListSerializer(
         posts, many=True)  # START EXPECTING THE LIST
@@ -114,8 +111,7 @@ def list_user_posts(request):
 def get_user_posts(request, user_id):
     user = User.objects.get(id=user_id)
     posts = Post.objects.filter(user=user)
-    serializer = PostListSerializer(
-        posts, many=True)  # START EXPECTING THE LIST
+    serializer = PostListSerializer(posts, many=True)  # START EXPECTING THE LIST
     return Response(serializer.data,status=200)
 
 
@@ -126,4 +122,3 @@ def list_posts_by_keyword(request, keyword):
     serializer = PostListSerializer(
         posts, many=True) 
     return Response(serializer.data,status=200)
-

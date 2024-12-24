@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
-from authentication.serializers import UserSerializer
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework.permissions import IsAuthenticated
+from authentication.serializers import ProfileSerializer, UserSerializer
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
@@ -44,3 +45,25 @@ def get_user(request, id):
         return Response({"message": "User fetched successfully", "data": serializer.data},status=200)
     except User.DoesNotExist:
         return Response({"message": "User Doesn't Exists"},status=404)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_profile(request):
+    user_id = request.user.id
+    request.data["user"] = user_id
+    serializer = ProfileSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response({"message": "Profile created successfully", "data": serializer.data}, status=201)
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    user = request.user
+    profile = user.profile
+    serializer = ProfileSerializer(
+        instance=profile, data=request.data, partial=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response({"message": "Profile updated successfully", "data": serializer.data}, status=200)
