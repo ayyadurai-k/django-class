@@ -1,4 +1,5 @@
-from posts.models import Post
+from matplotlib import category
+from posts.models import Post,Category
 from rest_framework import serializers
 from authentication.serializers import UserSerializer
 
@@ -19,9 +20,14 @@ class PostSerializer(serializers.ModelSerializer):
 
         return validated_data
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
 
 class PostListSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    category = CategorySerializer(read_only=True,many=True)
 
     class Meta:
         model = Post
