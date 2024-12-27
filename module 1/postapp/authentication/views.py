@@ -1,12 +1,10 @@
-from django.shortcuts import render
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated
 from authentication.serializers import ProfileSerializer, UserSerializer
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
-
+from rest_framework_simplejwt.tokens import AccessToken
 
 @api_view(["POST"])
 def signup_user(request):
@@ -28,14 +26,15 @@ def login_user(request):
 
     if not user:
         return Response({"error": "Invalid credentials"}, status=401)
-
-    token = Token.objects.create(user=user)
-
-    return Response({"message": "Login successful", "key": token.key})
-
-
-def list_user(request):
-    pass
+    
+    token = AccessToken.for_user(user)
+    
+    response = Response({"message": "Login successful", "data": {"username": user.username, "email": user.email, "token": str(token)}})
+    
+    response.set_cookie(key="jwt", value=str(token), httponly=True,samesite='Strict',max_age=365*24*60*60) # 1 YEAR 
+    
+    return response
+    
 
 @api_view(["GET"])
 def get_user(request, id):
